@@ -21,14 +21,14 @@ NP_SEED = os.getenv("NP_SEED")
 fake = Faker("en_US")
 
 # Cargar el CSV de zonas de taxi para obtener los LocationID
-df = pd.read_csv("services/seed_cli/app/data/csv/taxi_zone_lookup.csv")
+df = pd.read_csv("rutaviva\\services\\seed_cli\\app\\data\\csv\\taxi_zone_lookup.csv")
 zone_ids = df["LocationID"].tolist()
 
 # Determinamos si hay o no una seed.
 if SEED is not None:
     SEED = int(SEED)
 # Valor default para reproducibilidad de resultados.
-else:
+elif SEED is None:
     SEED = 1230821048148
     NP_SEED = 45
 
@@ -208,10 +208,10 @@ def compute_vehicle_status() -> str:
     )[0]
 
 #cargar la carpeta con el .shp
-zones_gdf = gpd.read_file("services/seed_cli/app/data/shapefiles/taxi_zones.shp")
+zones_gdf = gpd.read_file("rutaviva\\services\\seed_cli\\app\\data\\shapefiles\\taxi_zones.shp")
 
 #convertir y guardar a GeoJSON
-zones_gdf.to_file("services/seed_cli/app/data/geojson/sync_taxi_zones.geojson", driver="GeoJSON")
+zones_gdf.to_file("rutaviva\\services\\seed_cli\\app\\data\\geojson\\sync_taxi_zones.geojson", driver="GeoJSON")
 if zones_gdf.crs != "EPSG:4326":
     zones_gdf = zones_gdf.to_crs(epsg=4326)
 
