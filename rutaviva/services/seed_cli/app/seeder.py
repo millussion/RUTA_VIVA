@@ -20,8 +20,15 @@ NP_SEED = os.getenv("NP_SEED")
 # Inicializamos Faker con la localización en inglés de Estados Unidos.
 fake = Faker("en_US")
 
+# Resolver las rutas desde este archivo, no desde el directorio de ejecución.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+CSV_PATH = os.path.join(DATA_DIR, "csv", "taxi_zone_lookup.csv")
+SHAPEFILE_PATH = os.path.join(DATA_DIR, "shapefiles", "taxi_zones.shp")
+GEOJSON_PATH = os.path.join(DATA_DIR, "geojson", "sync_taxi_zones.geojson")
+
 # Cargar el CSV de zonas de taxi para obtener los LocationID
-df = pd.read_csv("rutaviva\\services\\seed_cli\\app\\data\\csv\\taxi_zone_lookup.csv")
+df = pd.read_csv(CSV_PATH)
 zone_ids = df["LocationID"].tolist()
 
 # Determinamos si hay o no una seed.
@@ -208,10 +215,10 @@ def compute_vehicle_status() -> str:
     )[0]
 
 #cargar la carpeta con el .shp
-zones_gdf = gpd.read_file("rutaviva\\services\\seed_cli\\app\\data\\shapefiles\\taxi_zones.shp")
+zones_gdf = gpd.read_file(SHAPEFILE_PATH)
 
 #convertir y guardar a GeoJSON
-zones_gdf.to_file("rutaviva\\services\\seed_cli\\app\\data\\geojson\\sync_taxi_zones.geojson", driver="GeoJSON")
+zones_gdf.to_file(GEOJSON_PATH, driver="GeoJSON")
 if zones_gdf.crs != "EPSG:4326":
     zones_gdf = zones_gdf.to_crs(epsg=4326)
 
