@@ -2,7 +2,7 @@
 Script principal de ejecución CLI para el Seeding de Datos.
 Administra lotes, transacciones, argumentos de consola e inserción ordenada.
 """
-
+import sys
 import argparse
 import logging
 import time
@@ -10,9 +10,11 @@ from typing import Any, Dict, List, Type
 
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
+from sqlalchemy import select, func
+from .models import Driver, Vehicle, Zone
 
-from .database import SessionLocal, clean_database
-from .seeders.seeder import (
+from .database import SessionLocal, clean_database, engine
+from .seed_cli.app.seeder import (
     apply_driver_status,
     generate_drivers,
     generate_licenses,
@@ -36,6 +38,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("DataSeeder")
+logger.info(f"engine.url: {engine.url}")
 
 
 def bulk_insert_in_chunks(session: Session, model_cls: Type, data: List[Dict[str, Any]], chunk_size: int = 5000):
@@ -90,6 +93,9 @@ def run_seeder(drivers_count: int, clean_first: bool):
         session.commit()
         elapsed_time = round(time.time() - start_time, 2)
         logger.info(f"¡Seeding completado con éxito en {elapsed_time} segundos!")
+        for model in (Zone, Driver, Vehicle):
+            n = session.execute(select(func.count()).select_from(model)).scalar()
+            logger.info(f"{model.__tablename__}: {n} filas")
 
     except Exception as e:
         session.rollback()

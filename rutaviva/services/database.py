@@ -12,12 +12,11 @@ logger = logging.getLogger("DataSeeder")
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql+psycopg2://user:password@localhost:5432/fleet_db"
+    "postgresql+psycopg://admin:admin1234@localhost:5438/rutaviva_db"
 )
 
 engine = create_engine(DATABASE_URL, echo=False, pool_size=20, max_overflow=10)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-
 
 def clean_database():
     """

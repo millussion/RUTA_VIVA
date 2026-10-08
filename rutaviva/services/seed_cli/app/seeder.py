@@ -21,7 +21,7 @@ NP_SEED = os.getenv("NP_SEED")
 fake = Faker("en_US")
 
 # Cargar el CSV de zonas de taxi para obtener los LocationID
-df = pd.read_csv("simulator/data/csv/taxi_zone_lookup.csv")
+df = pd.read_csv("services/seed_cli/app/data/csv/taxi_zone_lookup.csv")
 zone_ids = df["LocationID"].tolist()
 
 # Determinamos si hay o no una seed.
@@ -40,8 +40,8 @@ np.random.seed(NP_SEED)
 LAT_MIN, LAT_MAX = 40.4900, 40.9200
 LON_MIN, LON_MAX = -74.2700, -73.6800
 
-DRIVER_STATUSES = ["ACTIVE", "INACTIVE", "SUSPENDED"]
-VEHICLE_STATUSES = ["AVAILABLE", "BUSY", "OFFLINE", "MAINTENANCE"]
+DRIVER_STATUSES = ["active", "inactive", "suspended"]
+VEHICLE_STATUSES = ["available", "busy", "offline", "maintenance"]
 
 
 def uuid_from_random() -> uuid.UUID:
@@ -162,11 +162,7 @@ def generate_sanctions(
     return sanctions
 
 
-def compute_driver_status(
-    driver_id: uuid.UUID,
-    licenses_by_driver: Dict[uuid.UUID, List[Dict[str, Any]]],
-    sanctions_by_driver: Dict[uuid.UUID, List[Dict[str, Any]]],
-) -> str:
+def compute_driver_status(driver_id, licenses_by_driver, sanctions_by_driver) -> str:
     today = date.today()
     driver_licenses = licenses_by_driver.get(driver_id, [])
     if not driver_licenses:
@@ -177,16 +173,15 @@ def compute_driver_status(
         for sanction in sanctions_by_driver.get(driver_id, [])
     )
     if has_current_sanction:
-        return "SUSPENDED"
+        return "suspended"       # ← antes: "SUSPENDED"
 
     license_is_expired = all(
         license_data["expires_on"] < today
         for license_data in driver_licenses
     )
     if license_is_expired:
-        return "INACTIVE"
-    return "ACTIVE"
-
+        return "inactive"        # ← antes: "INACTIVE"
+    return "active"              # ← antes: "ACTIVE"
 
 def apply_driver_status(
     drivers: List[Dict[str, Any]],
@@ -205,19 +200,18 @@ def apply_driver_status(
         driver["status"] = compute_driver_status(driver["driver_id"], licenses_by_driver, sanctions_by_driver)
     return drivers
 
-
 def compute_vehicle_status() -> str:
     return random.choices(
-        ["AVAILABLE", "BUSY", "OFFLINE", "MAINTENANCE"],
+        ["available", "busy", "offline", "maintenance"],   # ← minúsculas
         weights=[50, 30, 10, 10],
         k=1,
     )[0]
 
 #cargar la carpeta con el .shp
-zones_gdf = gpd.read_file("simulator/data/shapefiles/taxi_zones.shp")
+zones_gdf = gpd.read_file("services/seed_cli/app/data/shapefiles/taxi_zones.shp")
 
 #convertir y guardar a GeoJSON
-zones_gdf.to_file("simulator/data/geojson/sync_taxi_zones.geojson", driver="GeoJSON")
+zones_gdf.to_file("services/seed_cli/app/data/geojson/sync_taxi_zones.geojson", driver="GeoJSON")
 if zones_gdf.crs != "EPSG:4326":
     zones_gdf = zones_gdf.to_crs(epsg=4326)
 
@@ -290,7 +284,7 @@ def generate_driver_vehicle_states(driver_vehicle_pairs, zones_gdf):
             "zone_id": zone_id,
             "latitude": lat,
             "longitude": lon,
-            "status": random.choice(["AVAILABLE", "BUSY"]), # Solo el activo está Available/Busy
+            "status": random.choice(["available", "busy"]), # Solo el activo está Available/Busy
             "last_seen_at": datetime.now(timezone.utc)
         })
 
@@ -305,7 +299,7 @@ def generate_driver_vehicle_states(driver_vehicle_pairs, zones_gdf):
                 "zone_id": inact_zone_id,
                 "latitude": inact_lat,
                 "longitude": inact_lon,
-                "status": random.choice(["OFFLINE", "MAINTENANCE"]), # Nunca AVAILABLE/BUSY
+                "status": random.choice(["offline", "maintenance"]), # Nunca AVAILABLE/BUSY
                 "last_seen_at": datetime.now(timezone.utc)
             })
 
