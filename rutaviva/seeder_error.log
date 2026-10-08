@@ -1,0 +1,147 @@
+2026-10-07 19:20:14,193 [INFO] DataSeeder: engine.url: postgresql+psycopg://admin:***@localhost:5438/rutaviva_db
+2026-10-07 19:20:14,194 [INFO] DataSeeder: Conectando a: postgresql+psycopg://admin:***@localhost:5438/rutaviva_db
+2026-10-07 19:20:14,194 [INFO] DataSeeder: Iniciando limpieza completa de tablas...
+2026-10-07 19:20:14,233 [INFO] DataSeeder: Tabla 'fare_audit' limpiada.
+2026-10-07 19:20:14,247 [INFO] DataSeeder: Tabla 'trip_request' limpiada.
+2026-10-07 19:20:14,250 [INFO] DataSeeder: Tabla 'zone_state_history' limpiada.
+2026-10-07 19:20:14,254 [INFO] DataSeeder: Tabla 'zone_state' limpiada.
+2026-10-07 19:20:14,262 [INFO] DataSeeder: Tabla 'vehicle_state' limpiada.
+2026-10-07 19:20:14,267 [INFO] DataSeeder: Tabla 'special_event' limpiada.
+2026-10-07 19:20:14,273 [INFO] DataSeeder: Tabla 'sanction' limpiada.
+2026-10-07 19:20:14,279 [INFO] DataSeeder: Tabla 'license' limpiada.
+2026-10-07 19:20:14,300 [INFO] DataSeeder: Tabla 'vehicle' limpiada.
+2026-10-07 19:20:14,305 [INFO] DataSeeder: Tabla 'weather_current' limpiada.
+2026-10-07 19:20:14,317 [INFO] DataSeeder: Tabla 'tariff_rule_version' limpiada.
+2026-10-07 19:20:14,364 [INFO] DataSeeder: Tabla 'driver' limpiada.
+2026-10-07 19:20:14,409 [INFO] DataSeeder: Tabla 'zone' limpiada.
+2026-10-07 19:20:14,418 [INFO] DataSeeder: Base de datos limpiada con éxito.
+2026-10-07 19:20:14,418 [INFO] DataSeeder: Generando zonas, conductores, vehículos, licencias, sanciones y estados...
+2026-10-07 19:20:14,429 [INFO] DataSeeder: Insertando 265 registros en 'zone' (Lotes de 5000)...
+2026-10-07 19:20:14,460 [INFO] DataSeeder: Insertando 3 registros en 'driver' (Lotes de 5000)...
+2026-10-07 19:20:14,465 [CRITICAL] DataSeeder: Error durante el seeding. Se realizó ROLLBACK de la transacción. Detalles: (psycopg.errors.CheckViolation) new row for relation "driver" violates check constraint "driver_status_check"
+DETAIL:  Failing row contains (2522d0a8-8f90-bd00-d9b6-3b8393107b10, ACTIVE, Kristina Marshall).
+[SQL: INSERT INTO driver (driver_id, status, full_name) VALUES (%(driver_id)s::UUID, %(status)s::VARCHAR, %(full_name)s::VARCHAR)]
+[parameters: [{'driver_id': UUID('2522d0a8-8f90-bd00-d9b6-3b8393107b10'), 'status': 'ACTIVE', 'full_name': 'Kristina Marshall'}, {'driver_id': UUID('2dfe8766-9af2-9f8a-8ae1-24e976dbc65c'), 'status': 'ACTIVE', 'full_name': 'Janice Glenn'}, {'driver_id': UUID('37c23c5b-dda2-04a2-8431-ec4c628f85c0'), 'status': 'ACTIVE', 'full_name': 'Randy Davis'}]]
+(Background on this error at: https://sqlalche.me/e/21/gkpj)
+Traceback (most recent call last):
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1915, in _exec_single_context
+    self.dialect.do_executemany(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1189, in do_executemany
+    cursor.executemany(statement, parameters)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 148, in executemany
+    raise ex.with_traceback(None)
+psycopg.errors.CheckViolation: new row for relation "driver" violates check constraint "driver_status_check"
+DETAIL:  Failing row contains (2522d0a8-8f90-bd00-d9b6-3b8393107b10, ACTIVE, Kristina Marshall).
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 85, in run_seeder
+    bulk_insert_in_chunks(session, Driver, drivers_data)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 55, in bulk_insert_in_chunks
+    session.execute(insert(model_cls), chunk)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2473, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2363, in _execute_internal
+    compile_state_cls.orm_execute_statement(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py", line 1327, in orm_execute_statement
+    result = _bulk_insert(
+             ^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py", line 225, in _bulk_insert
+    result = persistence._emit_insert_statements(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1052, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1451, in execute
+    return meth(
+           ^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 533, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1671, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1825, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1965, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2335, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1915, in _exec_single_context
+    self.dialect.do_executemany(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1189, in do_executemany
+    cursor.executemany(statement, parameters)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 148, in executemany
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.CheckViolation) new row for relation "driver" violates check constraint "driver_status_check"
+DETAIL:  Failing row contains (2522d0a8-8f90-bd00-d9b6-3b8393107b10, ACTIVE, Kristina Marshall).
+[SQL: INSERT INTO driver (driver_id, status, full_name) VALUES (%(driver_id)s::UUID, %(status)s::VARCHAR, %(full_name)s::VARCHAR)]
+[parameters: [{'driver_id': UUID('2522d0a8-8f90-bd00-d9b6-3b8393107b10'), 'status': 'ACTIVE', 'full_name': 'Kristina Marshall'}, {'driver_id': UUID('2dfe8766-9af2-9f8a-8ae1-24e976dbc65c'), 'status': 'ACTIVE', 'full_name': 'Janice Glenn'}, {'driver_id': UUID('37c23c5b-dda2-04a2-8431-ec4c628f85c0'), 'status': 'ACTIVE', 'full_name': 'Randy Davis'}]]
+(Background on this error at: https://sqlalche.me/e/21/gkpj)
+Traceback (most recent call last):
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1915, in _exec_single_context
+    self.dialect.do_executemany(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1189, in do_executemany
+    cursor.executemany(statement, parameters)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 148, in executemany
+    raise ex.with_traceback(None)
+psycopg.errors.CheckViolation: new row for relation "driver" violates check constraint "driver_status_check"
+DETAIL:  Failing row contains (2522d0a8-8f90-bd00-d9b6-3b8393107b10, ACTIVE, Kristina Marshall).
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 114, in <module>
+    run_seeder(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 102, in run_seeder
+    raise e
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 85, in run_seeder
+    bulk_insert_in_chunks(session, Driver, drivers_data)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/services/main.py", line 55, in bulk_insert_in_chunks
+    session.execute(insert(model_cls), chunk)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2473, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2363, in _execute_internal
+    compile_state_cls.orm_execute_statement(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py", line 1327, in orm_execute_statement
+    result = _bulk_insert(
+             ^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py", line 225, in _bulk_insert
+    result = persistence._emit_insert_statements(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1052, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1451, in execute
+    return meth(
+           ^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 533, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1671, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1825, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1965, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2335, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1915, in _exec_single_context
+    self.dialect.do_executemany(
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1189, in do_executemany
+    cursor.executemany(statement, parameters)
+  File "/home/dan/Escritorio/RutaViva/RUTA_VIVA/rutaviva/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 148, in executemany
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.CheckViolation) new row for relation "driver" violates check constraint "driver_status_check"
+DETAIL:  Failing row contains (2522d0a8-8f90-bd00-d9b6-3b8393107b10, ACTIVE, Kristina Marshall).
+[SQL: INSERT INTO driver (driver_id, status, full_name) VALUES (%(driver_id)s::UUID, %(status)s::VARCHAR, %(full_name)s::VARCHAR)]
+[parameters: [{'driver_id': UUID('2522d0a8-8f90-bd00-d9b6-3b8393107b10'), 'status': 'ACTIVE', 'full_name': 'Kristina Marshall'}, {'driver_id': UUID('2dfe8766-9af2-9f8a-8ae1-24e976dbc65c'), 'status': 'ACTIVE', 'full_name': 'Janice Glenn'}, {'driver_id': UUID('37c23c5b-dda2-04a2-8431-ec4c628f85c0'), 'status': 'ACTIVE', 'full_name': 'Randy Davis'}]]
+(Background on this error at: https://sqlalche.me/e/21/gkpj)

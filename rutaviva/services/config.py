@@ -1,0 +1,2 @@
+VEHICLE_COUNT = 100
+
