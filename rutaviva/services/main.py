@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Type
 
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql import insert as pg_insert  # reemplaza "from sqlalchemy import insert"
 from sqlalchemy import select, func
 from .models import Driver, Vehicle, Zone
 
@@ -43,16 +44,20 @@ logger.info(f"engine.url: {engine.url}")
 
 def bulk_insert_in_chunks(session: Session, model_cls: Type, data: List[Dict[str, Any]], chunk_size: int = 5000):
     """
-    Realiza inserciones masivas en lotes (chunks) optimizadas para SQLAlchemy Core.
+    Inserta en lotes ignorando filas que ya existen (misma PK/UNIQUE).
+    Así el seed es idempotente: ejecutarlo dos veces no duplica ni falla.
+    Genera un solo statement de INSERT con ON CONFLICT DO NOTHING y lo ejecuta en lotes.
+    Si la tabla tiene índices únicos, las filas duplicadas se ignoran.
     """
     total = len(data)
     if total == 0:
         return
 
     logger.info(f"Insertando {total} registros en '{model_cls.__tablename__}' (Lotes de {chunk_size})...")
+    # El ON CONFLICT se define una vez; cada lote se pasa como executemany.
+    statement = pg_insert(model_cls).on_conflict_do_nothing()
     for i in range(0, total, chunk_size):
-        chunk = data[i : i + chunk_size]
-        session.execute(insert(model_cls), chunk)
+        session.execute(statement, data[i : i + chunk_size])
     session.flush()
 
 
