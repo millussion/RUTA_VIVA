@@ -1,0 +1,32 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Base de datos y datos locales
+*.db
+*.sqlite3
+*.log
+seeder_error.log
+
+# Entorno de desarrollo
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Archivos de Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Datos que se copian explícitamente si es necesario
+# services/seed_cli/app/data/geojson/

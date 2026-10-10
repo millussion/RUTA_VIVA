@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: rutaviva_postgres
     restart: always
-    # Ruta relativa a ESTE archivo: sube de infra/ a la raíz del repo.
+    # El archivo .env está en la raíz del proyecto actual.
     env_file:
-      - ../.env
+      - ./.env
     # Puerto fijo: tu máquina escucha en 5438 y Docker lo manda al 5432 interno.
     ports:
       - "5438:5432"
