@@ -10,7 +10,21 @@ El módulo batch contiene los trabajos analíticos distribuidos (PySpark) y los 
 
 ---
 
-## 1. Jobs de Apache Spark (`batch/spark-jobs/`)
+## 1. Ingesta de fuente histórica
+
+`services/historical-data-ingest/` descarga todos los archivos originales de
+`elemento/nyc-yellow-taxi-trip-data` mediante KaggleHub y los conserva sin
+transformar en `data/bronze/nyc-yellow-taxi-trip-data/`. También escribe un
+`_source_manifest.json` para identificar el origen y los archivos recibidos.
+La ruta local puede cambiarse con `RAW_DATA_DIR` y está preparada para que un
+proceso posterior sincronice el contenido a `s3://<bucket>/bronze/`. La
+transferencia a S3 todavía no está implementada.
+
+La fuente Bronze es insumo de Spark, no una carga directa a Gold. La construcción
+de `FACT_TRIP` y las dimensiones requiere además las fuentes operacionales y
+auxiliares descritas en el modelo analítico.
+
+## 2. Jobs de Apache Spark (`batch/spark-jobs/`)
 
 ### `job1_clean_validate`
 * Ingiere datos masivos de viajes históricos de NYC Yellow Taxi (F1) desde la capa Raw/Bronze.
@@ -29,7 +43,7 @@ El módulo batch contiene los trabajos analíticos distribuidos (PySpark) y los 
 
 ---
 
-## 2. DAGs de Apache Airflow (`batch/dags/`)
+## 3. DAGs de Apache Airflow (`batch/dags/`)
 
 * **DAG de Ingesta Histórica**: Ejecución idempotente que orquesta Spark Job 1 y Job 2 particionados por año y mes.
 * **DAG Horario de Clima**: Consulta la API de Open-Meteo y actualiza la tabla operacional `weather_current` para que el cálculo en vivo siempre tenga el dato de precipitación sin latencia de red externa.

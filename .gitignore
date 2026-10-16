@@ -5,6 +5,9 @@ __pycache__/
 # Secretos: nunca se suben
 .env
 *.pem
+# Datos descargados para la capa Bronze
+/data/bronze/
+/data/
 # IDE / SO
 .vscode/
 .idea/

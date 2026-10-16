@@ -13,6 +13,7 @@ dependencies = [
     "faker>=40.41.0",
     "fastapi>=0.143.0",
     "geopandas>=1.2.0",
+    "kagglehub>=1.0.2",
     "pandas>=3.0.6",
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.0",
@@ -32,4 +33,3 @@ pythonpath = [
     "services/telemetry_simulator/app",
     "services/multiplier_api/app",
 ]
-
